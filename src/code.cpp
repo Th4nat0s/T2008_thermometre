@@ -9,13 +9,10 @@
 uint16_t nextRowOfTextToDraw;
 int hourCounter = 0;
 
-#define numCycles 1   // numCycles = the number of 4 second timeouts between readings of the light value. 900 = 1 hour. 1 = 4 seconds for the impatient. :)
 #define adc_disable() (ADCSRA &= ~(1 << ADEN)) // Disable ADC to save a lot of current consumption.
                                                // ADCSRA = ADC Control and Status Register A  , le bit 7 est ADEN: ADC Enable, 0 ca coupe l'adc.
 
-int val = 0;         // variable to store the read value
-int cycleCounter = 0;                   // As we take 1 light reading per hour but the maximum watchdog timer period is 8 seconds we need a counter to track the number of times the timer has timed out. 
-int period = 9;                        // This = 4 second timeout. Refer to table above
+int period = 9;                        // This = 8 second timeout. Refer to table above
 
 void dodo(){
   // met le bme en sleep
@@ -41,7 +38,7 @@ void setup_watchdog(int ii)
   uint8_t bb;
   // if (ii > 9 ) ii=9;
   bb=ii & 7;
-  // if (ii > 7) bb|= (1<<5);
+  if (ii > 7) bb|= (1<<5);
   bb|= (1<<WDCE);
 
   MCUSR &= ~(1<<WDRF);
@@ -82,36 +79,35 @@ void systemSleep()
   sleep_disable();  //when watchdog times out, desactive le bit sleep enable
 }
 
-void loop() {
- if (cycleCounter++ == numCycles)     // Is it time to read LDR value?
-    {
-    cycleCounter = 0;                  // Reset the count of 4 second periods.
-    hourCounter++;
-    if (hourCounter > 23) hourCounter = 0; // Reset the hour counter each 24 hours.
-    }
-
+void refresh() {  
   debout();
   int temperature = BME280temperature();
   unsigned int pressure = BME280pressure();
-  float tempf = float(temperature)/100;
   dodo();
+  float tempf = float(temperature)/100;
   String temp = "Temp: " + String(tempf) + " C";
   String pres = "Pres: " + String(pressure) + " Pa";
 
   oled.on();
   oled.clear();////
-  oled.setCursor(0,0 );  
+  oled.setCursor(0,0 );
   oled.print("MyHome Fridge");
-  oled.setCursor(0,1 );  
+  oled.setCursor(0,1 );
   oled.print(temp);
-  oled.setCursor(0,2 );  
+  oled.setCursor(0,2 );
   oled.print(pres);
-  // oled.setCursor(0,3);  
+  // oled.setCursor(0,3);
   oled.switchFrame();
-  delay(3000);
-  //  oled.off();
+  // oled.off();
+}
 
- systemSleep() ;
+
+void loop() {
+  refresh();
+
+  // Wait 16 Sec
+  systemSleep();
+  systemSleep();
   }
 
 // Watchdog Interrupt Service / is executed when watchdog timed out
