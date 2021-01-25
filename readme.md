@@ -1,12 +1,8 @@
-Platform IO base template
-=========================
+Attiny84 Thermometer
+=====================
 
-Push code to arduino or attiny84
+Push code to attiny84
 --------------------------------
-
-### Arduino
-Usb connection 
-arduino framework 
 
 ### Attiny84
 SPI Through BusPirate 
@@ -18,3 +14,6 @@ Tips
 `pio run -t upload` - upload firmware to a target  
 `pio run -t clean` - clean project (remove compiled files)  
 `pio run -t upload -e uno` upload only for arduino uno  
+
+
+![plot](./hardware/proto.jpeg)
