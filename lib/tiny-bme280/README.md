@@ -4,7 +4,7 @@ The Bosch BME280 is the perfect sensor for a home weather station as it provides
 
 For information about using this library see [ATtiny85 Weather Station](http://www.plasticki.com/show?2F5D).
 
- 
+## Modified by Thanat0s for TinywireM
 
 #### Introduction
 
